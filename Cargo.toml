@@ -1,0 +1,19 @@
+[package]
+name = "janus-eventhandler-sqlite"
+description = "Janus event handler for outputting event logs to SQLite."
+version = "0.1.0"
+authors = ["Marshall Quander <marshall@quander.me>"]
+license = "MPL-2.0"
+publish = false
+
+[lib]
+crate_type = ["cdylib"]
+
+[dependencies]
+atom = "0.3"
+janus-plugin = { version = "0.8.0", features = ["refcount"], path = "../janus-plugin-rs" }
+lazy_static = "1.0"
+rusqlite = "0.13"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
