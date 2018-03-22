@@ -11,6 +11,7 @@ crate_type = ["cdylib"]
 
 [dependencies]
 atom = "0.3"
+rust-ini = "0.10"
 janus-plugin = { version = "0.8.0", features = ["refcount"], path = "../janus-plugin-rs" }
 lazy_static = "1.0"
 rusqlite = "0.13"
