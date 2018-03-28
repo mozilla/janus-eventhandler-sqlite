@@ -1,6 +1,6 @@
+use ini::Ini;
 use std::error::Error;
 use std::path::{Path, PathBuf};
-use ini::Ini;
 
 fn parse_yesno(val: &String) -> bool {
     val == "yes"
@@ -15,16 +15,23 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
-        Self { enabled: true, db_path: PathBuf::from("events.db") }
+        Self {
+            enabled: true,
+            db_path: PathBuf::from("events.db"),
+        }
     }
 }
 
 impl Config {
     /// Reads the runtime configuration from an INI config file at the given path, applying defaults for individual
     /// configuration values that aren't present, or returning an error if no readable configuration is present at all.
-    pub fn from_path<P>(path: P) -> Result<Self, Box<Error>> where P: AsRef<Path> {
+    pub fn from_path<P>(path: P) -> Result<Self, Box<Error>>
+    where
+        P: AsRef<Path>,
+    {
         let conf = Ini::load_from_file(path)?;
-        let section = conf.section(Some("general")).ok_or("No 'general' section present in the config file.")?;
+        let section = conf.section(Some("general"))
+            .ok_or("No 'general' section present in the config file.")?;
         let defaults: Config = Default::default();
         Ok(Self {
             enabled: section.get("enabled").map(parse_yesno).unwrap_or(defaults.enabled),

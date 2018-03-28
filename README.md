@@ -4,6 +4,13 @@
 
 A simple [Janus](https://janus.conf.meetecho.com/) [event handler](https://janus.conf.meetecho.com/docs/group__eventhandlerapi.html) to record events in a SQLite database on disk.
 
+## Configuration
+
+This event handler will read janus.eventhandler.sqlite.cfg from the Janus config directory, if present. Like other Janus configuration, the config file should be in INI format. The following options are configurable in the `general` section of the config file:
+
+- `enabled = yes|no`: Whether this event handler does any work at all. Default `yes`.
+- `db_path = /path/to/sqlite/db`: The path to the SQLite DB in which events will be written. The database will be created and initialized if it's not already present. Defaults to `events.db`.
+
 ## Building
 
 ```
