@@ -97,7 +97,7 @@ extern "C" fn destroy() {
     janus_info!("Janus SQLite event recorder destroyed!");
 }
 
-extern "C" fn handle_request(request: *mut RawJanssonValue) -> *mut RawJanssonValue {
+extern "C" fn handle_request(_req: *mut RawJanssonValue) -> *mut RawJanssonValue {
     // we don't currently support runtime reconfiguration or queries of any kind, although we could
     from_serde_json(&json!({})).as_mut_ref()
 }
