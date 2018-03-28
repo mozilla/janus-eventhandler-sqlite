@@ -11,6 +11,12 @@ This event handler will read janus.eventhandler.sqlite.cfg from the Janus config
 - `enabled = yes|no`: Whether this event handler does any work at all. Default `yes`.
 - `db_path = /path/to/sqlite/db`: The path to the SQLite DB in which events will be written. The database will be created and initialized if it's not already present. Defaults to `events.db`.
 
+## Dependencies
+
+```
+$ sudo apt install libjansson-dev libsqlite3-dev
+```
+
 ## Building
 
 ```

@@ -4,4 +4,5 @@ rust:
 addons:
   apt:
     packages:
+      - libjansson-dev
       - libsqlite3-dev
