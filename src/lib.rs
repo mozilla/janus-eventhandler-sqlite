@@ -56,7 +56,9 @@ lazy_static! {
 /// A single event that happened. These will be queued up asynchronously and processed in order later.
 #[derive(Debug)]
 struct RawEvent {
-    /// JSON information associated with the event.
+    /// JSON information associated with the event. Probably the best reference to the contents of Janus events is the
+    /// sample event handler code in the Janus codebase, which you can find here:
+    /// https://github.com/meetecho/janus-gateway/blob/master/events/janus_sampleevh.c#L473
     pub json: Option<JanssonValue>,
 }
 
@@ -96,7 +98,7 @@ extern "C" fn destroy() {
 }
 
 extern "C" fn handle_request(request: *mut RawJanssonValue) -> *mut RawJanssonValue {
-    // we don't currently support runtime configuration of any kind
+    // we don't currently support runtime reconfiguration or queries of any kind, although we could
     from_serde_json(&json!({})).as_mut_ref()
 }
 

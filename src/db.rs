@@ -1,3 +1,4 @@
+/// Code responsible for interoperating with the schema of the events database.
 use chrono::{DateTime, TimeZone, Utc};
 use rusqlite::Connection;
 use serde::de::{self, Deserializer, Visitor};
@@ -23,7 +24,7 @@ pub struct Event {
     pub event: JsonValue,
     /// The Janus event category this event is in.
     #[serde(rename = "type")]
-    pub kind: u32,
+    pub kind: u32, // todo: deserialize this into a JanusEventType constant
     /// The timestamp at which this event occurred.
     #[serde(deserialize_with = "deserialize_janus_timestamp")]
     pub timestamp: DateTime<Utc>,

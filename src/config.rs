@@ -1,3 +1,4 @@
+/// Code for reading the event handler config file into memory.
 use ini::Ini;
 use std::error::Error;
 use std::path::{Path, PathBuf};
