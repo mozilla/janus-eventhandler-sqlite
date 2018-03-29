@@ -2,9 +2,9 @@ extern crate atom;
 extern crate chrono;
 extern crate ini;
 #[macro_use]
-extern crate lazy_static;
-#[macro_use]
 extern crate janus_plugin as janus;
+#[macro_use]
+extern crate lazy_static;
 extern crate rusqlite;
 extern crate serde;
 #[macro_use]
@@ -72,10 +72,16 @@ extern "C" fn init(config_path: *const c_char) -> c_int {
     let config = match get_config(config_path) {
         Ok(c) => c,
         Err(e) => {
-            janus_warn!("Error loading configuration for event handler plugin: {}", e);
+            janus_warn!(
+                "Error loading configuration for event handler plugin: {}",
+                e
+            );
             Config::default()
         }
     };
+    unsafe {
+        EVH.events_mask = config.events.bits();
+    }
     STATE.config.set_if_none(Box::new(config));
     let stored_config = STATE.config.get().unwrap();
     if stored_config.enabled {
@@ -114,7 +120,9 @@ extern "C" fn incoming_event(event: *mut RawJanssonValue) {
 fn parse_event(RawEvent { json }: RawEvent) -> Result<db::Event, Box<Error>> {
     match json {
         None => Err(From::from("Events should not be null.")),
-        Some(data) => Ok(serde_json::from_str(data.to_libcstring(JanssonEncodingFlags::empty()).to_str()?)?),
+        Some(data) => Ok(serde_json::from_str(data.to_libcstring(
+            JanssonEncodingFlags::empty(),
+        ).to_str()?)?),
     }
 }
 
@@ -144,9 +152,7 @@ fn handle_events(config: &Config, events_rx: mpsc::Receiver<RawEvent>) -> Result
     Ok(())
 }
 
-const EVENTS_MASK: u32 = std::u32::MAX; // todo: would be nice if this was configurable
-
-const EVH: EventHandler = build_eventhandler!(
+static mut EVH: EventHandler = build_eventhandler!(
     LibraryMetadata {
         api_version: 2,
         version: 1,
@@ -156,11 +162,11 @@ const EVH: EventHandler = build_eventhandler!(
         description: c_str!(env!("CARGO_PKG_DESCRIPTION")),
         author: c_str!(env!("CARGO_PKG_AUTHORS")),
     },
-    EVENTS_MASK,
+    0, // override at runtime based on config
     init,
     destroy,
     incoming_event,
     handle_request
 );
 
-export_eventhandler!(&EVH);
+export_eventhandler!(unsafe { &EVH });

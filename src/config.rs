@@ -1,10 +1,18 @@
 /// Code for reading the event handler config file into memory.
 use ini::Ini;
+use janus::JanusEventType;
 use std::error::Error;
 use std::path::{Path, PathBuf};
+use std::str::FromStr;
 
 fn parse_yesno(val: &String) -> bool {
     val == "yes"
+}
+
+fn parse_events(val: &String) -> Option<JanusEventType> {
+    u32::from_str(val)
+        .map(JanusEventType::from_bits_truncate)
+        .ok()
 }
 
 /// All of the runtime configuration for the event handler.
@@ -12,6 +20,7 @@ fn parse_yesno(val: &String) -> bool {
 pub struct Config {
     pub enabled: bool,
     pub db_path: PathBuf,
+    pub events: JanusEventType,
 }
 
 impl Default for Config {
@@ -19,6 +28,7 @@ impl Default for Config {
         Self {
             enabled: true,
             db_path: PathBuf::from("events.db"),
+            events: JanusEventType::all(),
         }
     }
 }
@@ -35,8 +45,18 @@ impl Config {
             .ok_or("No 'general' section present in the config file.")?;
         let defaults: Config = Default::default();
         Ok(Self {
-            enabled: section.get("enabled").map(parse_yesno).unwrap_or(defaults.enabled),
-            db_path: section.get("db_path").map(PathBuf::from).unwrap_or(defaults.db_path),
+            enabled: section
+                .get("enabled")
+                .map(parse_yesno)
+                .unwrap_or(defaults.enabled),
+            db_path: section
+                .get("db_path")
+                .map(PathBuf::from)
+                .unwrap_or(defaults.db_path),
+            events: section
+                .get("events")
+                .and_then(parse_events)
+                .unwrap_or(defaults.events),
         })
     }
 }
